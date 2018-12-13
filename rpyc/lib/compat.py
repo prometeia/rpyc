@@ -141,8 +141,11 @@ else:
                 time.sleep(timeout)
                 return []  # need to return an empty array in this case
             else:
-                rl, wl, _ = select(self.rlist, self.wlist, (), timeout)
-                return [(fd, "r") for fd in rl] + [(fd, "w") for fd in wl]
+                try:
+                    rl, wl, _ = select(self.rlist, self.wlist, (), timeout)
+                    return [(fd, "r") for fd in rl] + [(fd, "w") for fd in wl]
+                except Exception:
+                    return [(fd, "S") for fd in self.rlist] + [(fd, "S") for fd in self.wlist]
 
     poll = SelectingPoll
 

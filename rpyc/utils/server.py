@@ -8,6 +8,7 @@ import time
 import threading
 import errno
 import logging
+import select
 try:
     import Queue
 except ImportError:
@@ -392,6 +393,14 @@ class ThreadPoolServer(Server):
                 if "e" in evt or "n" in evt or "h" in evt:
                     # it was an error, connection was closed. Do the same on our side
                     self._drop_connection(fd)
+                elif "S" in evt:
+                    # workaround for SelectingPoll on Windows not handling poll errors
+                    try:
+                        # try pinging the fd to see if it's still alive
+                        select.select([fd], [], [], 0.2)
+                    except select.error as err:
+                        # it's dead, drop connection
+                        self._drop_connection(fd)
                 else:
                     # connection has data, let's add it to the active queue
                     self._active_connection_queue.put(fd)
