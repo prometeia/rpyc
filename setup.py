@@ -30,7 +30,8 @@ METADATA = gen_metadata(
             "rpyc_classic = rpyc.scripts.rpyc_classic:main",
             "rpyc_registry = rpyc.scretips.rpyc_registry:main"
         ]
-    }
+    },
+    masterbuild=1
 )
 
 # Disabling auto tests
